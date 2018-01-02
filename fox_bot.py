@@ -15,7 +15,6 @@ my_id = 105698410
 admin_ids = [my_id]
 #token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE' # test token
 token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q' # work token
-message_file = 'all_messages.txt'
 
 #407850900: 'Паллада-5'
 
@@ -109,7 +108,6 @@ class BotInfo:
         self.BIRTHDAY_FILE = 'birthdays.json'
         self.year = datetime.datetime.now().year
         self.TRAINING_FILE = 'trainings.json'
-        self.message_counter = 0
 
     def get_scores(self, link, uid):
         num_spaces = 15
@@ -294,19 +292,8 @@ def handle_stop(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
-    with open(message_file, 'a') as f:
-        try:
-            f.write(message.text.encode('utf-8') + ' --- ' + str(message.from_user.id) + '  ' +  message.from_user.first_name.encode('utf-8') + '\n')
-        except Exception as e:
-            bot.send_message(my_id, 'Writing message to file FAILED:\n' + str(e))
     print(message.text, '  ', message.from_user)
-    try:
-        bot_info.message_counter += 1
-        if bot_info.message_counter % 30 ==0:
-            team_tracker.send_file(my_id, message_file)
-    except Exception as e:
-        bot.send_message(my_id, 'Sending message file FAILED:\n' + str(e))
-
+    
     if message.text == u'Расписание':
         try:
             uid = message.from_user.id
