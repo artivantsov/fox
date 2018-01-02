@@ -279,7 +279,7 @@ def handle_start(message):
     basic_start_handler(user_markup, team)
     try:
         if message.from_user.first_name:
-            bot.send_message(message.from_user.id, 'Привет, ' + str(message.from_user.first_name) + ' :)', reply_markup=user_markup)
+            bot.send_message(message.from_user.id, 'Привет, ' + message.from_user.first_name + ' :)', reply_markup=user_markup)
         else:
             bot.send_message(message.from_user.id, 'Привет! :)', reply_markup=user_markup)
     except UnicodeEncodeError:
