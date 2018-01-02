@@ -155,7 +155,7 @@ class BotInfo:
 
     def nearest_date(self, base, dates):
 
-            nearness = {date.timestamp() - base.timestamp(): date for date in dates.keys() if (base.timestamp() <= date.timestamp())}
+            nearness = {int(date.strftime("%s")) - int(base.strftime("%s")): date for date in dates.keys() if (int(base.strftime("%s")) <= int(date.strftime("%s")))}
             if nearness:
                 return dates[nearness[min(nearness.keys())]]
             return ''
