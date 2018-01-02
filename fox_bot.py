@@ -15,6 +15,8 @@ my_id = 105698410
 admin_ids = [my_id]
 #token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE' # test token
 token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q' # work token
+messages_file = 'all_messages.txt'
+message_counter = 0
 
 #407850900: 'Паллада-5'
 
@@ -292,7 +294,17 @@ def handle_stop(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
+    try:
+        with open(messages_file, 'a') as f:
+            log = message.text + ' ' + message.from_user + '\n'
+            f.write(log)
+    except:
+        bot.send_message(my_id, 'Writing to message file FAILED:\n' + log)
     print(message.text, '  ', message.from_user)
+    
+    message_counter += 1
+    if message_counter % 30 == 0:
+        team_tracker.send_file(my_id, messages_file)
 
     if message.text == u'Расписание':
         try:
