@@ -167,7 +167,7 @@ class BotInfo:
             dates = {datetime.datetime.strptime(key+'.'+str(self.year), '%d.%m.%Y'): key for key in birthdays.keys()}
             nearest = self.nearest_date(datetime.datetime.now(), dates)
             if nearest:
-                return birthdays[nearest]['date'] + ':  \n' + str(birthdays[nearest]['name'])
+                return birthdays[nearest]['date']# + ':  \n' + str(birthdays[nearest]['name'])
             return 'В этом году больше нет Дней Рождения :('
 
     def get_training(self):
