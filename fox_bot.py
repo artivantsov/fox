@@ -1,0 +1,299 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import unicode_literals
+from bs4 import BeautifulSoup
+import requests
+import telebot
+import time
+import datetime
+import json
+import random
+
+
+my_id = 105698410
+admin_ids = [my_id]
+token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q'
+
+#407850900: 'Паллада-5'
+
+links = {
+    'Foxes': {
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=669',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=669'},
+    'Антигравитация': {
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=634',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=634'},
+    'Паллада-5': {
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=661',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=661'},
+    'Иствуд-2':{
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=669',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=669'}
+}
+
+
+bot = telebot.TeleBot(token)
+
+
+class TeamTracker():
+
+    def __init__(self):
+        self.DEF_TEAM = 'Foxes'
+        self.FILE_NAME = 'current_teams.json'
+        self.current_teams = self.read_current_teams_from_file()
+
+    def set_team(self, uid, team):
+        if team in links.keys():
+            uid = str(uid)
+            self.current_teams[uid] = team
+            self.update_dictionary()
+        else: 
+            raise('Invalid team')
+
+    def set_deafault_team(self, uid):
+        uid = str(uid)
+        self.current_teams[uid] = self.DEF_TEAM
+        self.update_dictionary()
+        self.send_file(my_id)
+
+    def get_team(self, uid):
+        uid = str(uid)
+        return self.current_teams.get(uid)
+
+    def update_dictionary(self):
+        with open(self.FILE_NAME, 'w') as f:
+            json.dump(self.current_teams, f)
+
+    def read_current_teams_from_file(self):
+        try:
+            with open(self.FILE_NAME, 'r') as f:
+                return json.load(f)
+        except Exception:
+            print('No file')
+            return {}
+
+    def if_exist(self, uid):
+        uid = str(uid)
+        if self.current_teams.get(uid):
+            return True
+        return False
+
+    def delete_user(self, uid):
+        uid = str(uid)
+        result = self.current_teams.pop(uid, False)
+        if result:
+            self.update_dictionary()
+            self.send_file(my_id)
+            return True
+        return False
+
+    def send_file(self, uid):
+        document = open(self.FILE_NAME, 'rb')
+        bot.send_chat_action(uid, 'upload_document')
+        bot.send_document(uid, document)
+        document.close()
+
+    def clear_file(self):
+        with open(self.FILE_NAME, 'w') as f:
+            f.write('')
+
+
+class BotInfo:
+
+    def __init__(self):
+        self.foxes_file = 'urls.txt'
+
+    def get_scores(self, link, uid):
+        num_spaces = 15
+
+        HTML_DOC = requests.get(link).content
+
+        text = 'Место:' + '  ' + 'Команда' + ': ' + ' '*(num_spaces-7) + 'Очки:' + '\n'
+        soup = BeautifulSoup(HTML_DOC, 'html.parser')
+        all_teams = {}
+        table = [s for s in soup(text=team_tracker.get_team(uid))][0]
+        for chunk in [i for i in table.parent.parent.parent.parent.parent.parent.children if i != '\n'][1:]:
+            for i, data in enumerate(chunk.children):
+                if i == 0:
+                    place = data.text
+                elif i == 2:
+                    team = data.text
+                elif i == 4:
+                    score = data.text
+            all_teams[team] = {'place': place,
+                           'score': score}
+        sort = sorted(all_teams.keys(), key=lambda x: int(all_teams[x]['place']))
+        for team in sort:
+            text += str(all_teams[team]['place']) + 8*' ' + team + ': ' + ' '*2*(num_spaces-len(team)) + str(all_teams[team]['score']) + '\n'
+        return text
+
+    def get_schedule(self, link, uid):
+
+        HTML_DOC = requests.get(link).content
+        query_team = team_tracker.get_team(uid)
+        soup = BeautifulSoup(HTML_DOC, 'html.parser')
+        games = []
+
+        for elem in soup(text=query_team):
+            tag = elem.parent
+            if tag.name != 'option':
+                games.append(' => '.join((c.text) for c in tag.parent.parent.children if c != '\n'))
+
+        return '\n\n'.join(games)
+
+    def get_fox_picture(self):
+
+        with open(self.foxes_file, 'r') as f:
+            foxes = list(f.readlines())
+        return random.choice(foxes)
+
+
+bot_info = BotInfo()
+team_tracker = TeamTracker()
+
+# =============== Start handlers ======================
+
+def basic_start_handler(user_markup, team=None):
+
+    func_dict = {
+        None: my_start_handler, 
+        'Foxes': foxes_start_handler,
+        'Антигравитация': common_start_handler,
+        'Паллада-5': common_start_handler,
+        'Иствуд-2': common_start_handler}
+    if team in func_dict.keys():
+        func_dict[team](user_markup)
+    else:
+        print(team, 'wrong team!')
+
+def my_start_handler(user_markup):
+    user_markup.row('/start', '/stop')
+    user_markup.row('Иствуд-2', 'Паллада-5', 'Foxes')
+    user_markup.row('Антигравитация')
+    return
+
+def foxes_start_handler(user_markup):
+    user_markup.row('/start', '/stop')
+    user_markup.row('Расписание', 'Хочу картинку Лисички!')
+    user_markup.row('Статистика', 'Еще что-нибудь')
+    return
+
+def common_start_handler(user_markup):
+    user_markup.row('/start', '/stop')
+    user_markup.row('Расписание')
+    user_markup.row('Статистика')
+    return
+
+def claim_new_user(user):
+    text = 'NEW USER: \n' + str(user)
+    bot.send_message(my_id, text)
+
+# =====================================================
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    user_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    uid = message.from_user.id
+    if uid in admin_ids:
+        team = None
+
+    elif team_tracker.if_exist(uid):
+        team = team_tracker.get_team(uid)
+
+    else:
+        team_tracker.set_deafault_team(uid)
+        team = team_tracker.get_team(uid)
+        claim_new_user(message.from_user)
+
+    basic_start_handler(user_markup, team)
+    bot.send_message(message.from_user.id, 'Привет, ' + str(message.from_user.first_name.decode('utf-8')) + ' :)', reply_markup=user_markup)
+
+@bot.message_handler(commands=['stop'])
+def handle_stop(message):
+    hide_markup = telebot.types.ReplyKeyboardHide()
+    bot.send_message(message.from_user.id, 'Пока :)', reply_markup=hide_markup)
+
+@bot.message_handler(content_types=['text'])
+def handle_text(message):
+    print(message.text, '  ', message.from_user)
+
+    if message.text == u'Расписание':
+        try:
+            uid = message.from_user.id
+            schedule_link = links[team_tracker.get_team(uid)]['schedule']
+            text = bot_info.get_schedule(schedule_link, uid)
+            bot.send_message(message.from_user.id, text)
+        except KeyError:
+            pass
+
+    elif message.text == u'Хочу картинку Лисички!':
+        text = bot_info.get_fox_picture()
+        bot.send_message(message.from_user.id, text)
+
+    elif message.text == u'Еще что-нибудь':
+        text = u'Потом доделаю'
+        bot.send_message(message.from_user.id, text)
+
+    elif message.text == u'Статистика':
+        try:
+            uid = message.from_user.id
+            stats_link = links[team_tracker.get_team(uid)]['stats']
+            text = bot_info.get_scores(stats_link, uid)
+            bot.send_message(message.from_user.id, text)
+        except KeyError:
+            pass
+
+    elif message.text in links.keys():
+        uid = message.from_user.id
+        team = message.text
+        team_tracker.set_team(uid, team)
+        hide_markup = telebot.types.ReplyKeyboardHide()
+        bot.send_message(uid, 'Инфо о следующей команде: ', reply_markup=hide_markup)
+        user_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        basic_start_handler(user_markup, team)
+        bot.send_message(uid, '______' + team + '______', reply_markup=user_markup)
+
+
+
+    # ================ ## private ## ===========================
+    else:
+        if message.from_user.id == my_id:
+            if message.text.split(' ')[0] == 'Set':
+                try:
+                    uid, team = message.text.split(' ')[1], message.text.split(' ')[2]
+                    team_tracker.set_team(uid, team)
+                    bot.send_message(my_id, 'Team has been updated successfully!')
+                    team_tracker.send_file(my_id)
+                except:
+                    bot.send_message(message.from_user.id, 'Invalid TEAM')
+            elif message.text.split(' ')[0] == 'Delete':
+                uid = message.text.split(' ')[1]
+                if team_tracker.delete_user(uid):
+                    bot.send_message(my_id, 'User {} deleted.'.format(uid))
+                else:
+                    bot.send_message(my_id, 'User {} does not exist.'.format(uid))
+            else: 
+                bot.send_message(message.from_user.id, 'Artem, I don\'t know this command!')
+        else: 
+            bot.send_message(message.from_user.id, 'То, что ты пишешь - полная чушь!')
+
+
+
+
+
+#bot.polling(none_stop=True, interval=0)
+
+while True:
+    try:
+        bot.polling(none_stop=True, interval=0, timeout=60)
+    except Exception as e:
+        print(e, e.args[-1])
+        with open('bot_logger.txt', 'a') as f:
+            error = str(datetime.datetime.now()) + ': ' + str(e.args[-1]) + '\n'
+            f.write(error)
+
+        bot = telebot.TeleBot(token)
+        bot.send_message(my_id, error)
+        bot.stop_polling()
+        time.sleep(5)

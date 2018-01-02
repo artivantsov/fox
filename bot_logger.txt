@@ -1,0 +1,3 @@
+2017-12-20 13:40:51.307806: write() argument must be str, not dict
+2018-01-01 19:23:28.954993: maximum recursion depth exceeded
+2018-01-01 19:24:05.474875: ordinal not in range(128)
