@@ -15,8 +15,7 @@ my_id = 105698410
 admin_ids = [my_id]
 #token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE' # test token
 token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q' # work token
-messages_file = 'all_messages.txt'
-message_counter = 0
+message_file = 'all_messages.txt'
 
 #407850900: 'Паллада-5'
 
@@ -110,6 +109,7 @@ class BotInfo:
         self.BIRTHDAY_FILE = 'birthdays.json'
         self.year = datetime.datetime.now().year
         self.TRAINING_FILE = 'trainings.json'
+        self.message_counter = 0
 
     def get_scores(self, link, uid):
         num_spaces = 15
@@ -294,17 +294,18 @@ def handle_stop(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
-    try:
-        with open(messages_file, 'a') as f:
-            log = message.text + ' ' + message.from_user + '\n'
-            f.write(log)
-    except:
-        bot.send_message(my_id, 'Writing to message file FAILED:\n' + log)
+    with open(message_file, 'a') as f:
+        try:
+            f.write(message.text + ' --- ' + str(message.from_user.id) + '  ' +  message.from_user.first_name + '\n')
+        except Exception as e:
+            bot.send_message(my_id, 'Writing message to file FAILED:\n' + str(e))
     print(message.text, '  ', message.from_user)
-    
-    message_counter += 1
-    if message_counter % 30 == 0:
-        team_tracker.send_file(my_id, messages_file)
+    try:
+        bot_info.message_counter += 1
+        if bot_info.message_counter % 30 ==0:
+            team_tracker.send_file(my_id, message_file)
+    except Exception as e:
+        bot.send_message(my_id, 'Sending message file FAILED:\n' + str(e))
 
     if message.text == u'Расписание':
         try:
@@ -400,8 +401,8 @@ def handle_text(message):
             bot.send_message(message.from_user.id, 'То, что ты пишешь - полная чушь!')
 
 
-# bot.polling(none_stop=True, interval=0)
-
+bot.polling(none_stop=True, interval=0)
+'''
 while True:
     try:
         bot.polling(none_stop=True, interval=0, timeout=60)
@@ -415,4 +416,4 @@ while True:
         bot.send_message(my_id, error)
         bot.stop_polling()
         time.sleep(5)
-
+'''
