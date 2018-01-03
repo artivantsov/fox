@@ -295,7 +295,7 @@ def handle_stop(message):
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     try:
-        with io.open(message_file, 'a', , encoding='utf8') as f:
+        with io.open(message_file, 'a', encoding='utf8') as f:
             log = u'{} {}: {}\n'.format(message.from_user.first_name, message.from_user.last_name, message.text)
             f.write(log)
     except Exception as e:
