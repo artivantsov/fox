@@ -293,6 +293,7 @@ def handle_stop(message):
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     print(message.text, '  ', message.from_user)
+    bot.send_message(my_id, 'New message: \n{} {}:\n{}'.format(message.from_user.first_name, message.from_user.last_name, message.text))
     
     if message.text == u'Расписание':
         try:
