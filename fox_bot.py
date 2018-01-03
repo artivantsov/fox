@@ -306,7 +306,7 @@ def handle_text(message):
 
     try:
         bot_info.message_count += 1
-        if bot_info.message_count % 3 == 0:
+        if bot_info.message_count % 20 == 0:
             team_tracker.send_file(my_id, message_file)
     except Exception as e:
         bot.send_message(my_id, 'Sending message file FAILED:\n{}'.format(str(e)))
