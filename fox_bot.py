@@ -296,7 +296,7 @@ def handle_stop(message):
 def handle_text(message):
     try:
         with open(message_file, 'a') as f:
-            log = 'Name: {} {} - Message: {}\n'.format(message.from_user.first_name, message.from_user.last_name, message.text)
+            log = u'{} {}: {}\n'.format(message.from_user.first_name, message.from_user.last_name, message.text)
             f.write(log)
     except Exception as e:
         bot.send_message(my_id, 'Writing message to file FAILED:\n{}'.format(str(e)))
