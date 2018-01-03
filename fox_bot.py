@@ -16,6 +16,7 @@ admin_ids = [my_id]
 #token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE' # test token
 token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q' # work token
 
+message_file = 'all_messages.txt'
 #407850900: 'Паллада-5'
 
 links = {
@@ -95,8 +96,8 @@ class TeamTracker():
         bot.send_document(uid, document)
         document.close()
 
-    def clear_file(self):
-        with open(self.FILE_NAME, 'w') as f:
+    def clear_file(self, file):
+        with open(file, 'w') as f:
             f.write('')
 
 # =============== Bot info class ======================
@@ -292,8 +293,16 @@ def handle_stop(message):
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
+    try:
+        with open(message_file, 'a') as f:
+            log = '{}: {} - Name: {} {} - Message: {}\n'.format(datetime.datetime.now(), str(message.from_user.id), 
+                message.from_user.first_name, message.from_user.last_name, message.text)
+    except Exception as e:
+        bot.send_message(my_id, str(e))
+
     print(message.text, '  ', message.from_user)
-    bot.send_message(my_id, 'New message: \n{} {}:\n{}'.format(message.from_user.first_name, message.from_user.last_name, message.text))
+    if message.from_user.id != my_id:
+        bot.send_message(my_id, 'New message: \n{} {}:\n{}'.format(message.from_user.first_name, message.from_user.last_name, message.text))
     
     if message.text == u'Расписание':
         try:
