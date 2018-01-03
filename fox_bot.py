@@ -296,8 +296,7 @@ def handle_stop(message):
 def handle_text(message):
     try:
         with open(message_file, 'a') as f:
-            log = '{}: {} - Name: {} {} - Message: {}\n'.format(datetime.datetime.now(), str(message.from_user.id),
-                message.from_user.first_name, message.from_user.last_name, message.text)
+            log = 'Name: {} {} - Message: {}\n'.format(message.from_user.first_name, message.from_user.last_name, message.text)
             f.write(log)
     except Exception as e:
         bot.send_message(my_id, 'Writing message to file FAILED:\n{}'.format(str(e)))
@@ -307,7 +306,7 @@ def handle_text(message):
     try:
         bot_info.message_count += 1
         if bot_info.message_count % 3 == 0:
-            team_tracker.send_file(message_file)
+            team_tracker.send_file(my_id, message_file)
     except Exception as e:
         bot.send_message(my_id, 'Sending message file FAILED:\n{}'.format(str(e)))
 
