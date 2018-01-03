@@ -409,8 +409,8 @@ def handle_text(message):
             bot.send_message(message.from_user.id, 'То, что ты пишешь - полная чушь!')
 
 
-bot.polling(none_stop=True, interval=0)
-'''
+#bot.polling(none_stop=True, interval=0)
+
 while True:
     try:
         bot.polling(none_stop=True, interval=0, timeout=60)
@@ -424,4 +424,4 @@ while True:
         bot.send_message(my_id, error)
         bot.stop_polling()
         time.sleep(5)
-'''
+
