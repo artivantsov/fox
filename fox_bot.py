@@ -382,7 +382,8 @@ def handle_text(message):
                     bot_info.add_training(date, text)
                     bot.send_message(my_id, 'Training has been added successfully!\ndate: {date}\ntext: {text}'.format(date, text))
                     team_tracker.send_file(my_id, bot_info.TRAINING_FILE)
-                except:
+                except Exception as e:
+                    print(e)
                     bot.send_message(message.from_user.id, 'Training adding failed')
 
             elif message.text.split(' ')[0] == 'Add_birthday':
