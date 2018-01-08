@@ -159,7 +159,8 @@ class BotInfo:
     def nearest_date(self, base, dates):
 
             fourteen_hrs = 14*60*60
-            nearness = {int(date.strftime("%s")) - int(base.strftime("%s")): date for date in dates.keys() if (int(base.strftime("%s")) + fourteen_hrs <= int(date.strftime("%s")))}
+            nearness = {int(date.strftime("%s")) - int(base.strftime("%s")): date \
+                for date in dates.keys() if (int(base.strftime("%s")) <= int(date.strftime("%s")) + fourteen_hrs)}
             if nearness:
                 return dates[nearness[min(nearness.keys())]]
             return ''
@@ -368,7 +369,7 @@ def handle_text(message):
                     bot.send_message(my_id, 'Team has been updated successfully!')
                     team_tracker.send_file(my_id, team_tracker.FILE_NAME)
                 except:
-                    bot.send_message(message.from_user.id, 'Invalid TEAM')
+                    bot.send_message(message.my_id, 'Invalid TEAM')
 
             elif message.text.split(' ')[0] == 'Delete':
                 uid = message.text.split(' ')[1]
@@ -385,7 +386,7 @@ def handle_text(message):
                     team_tracker.send_file(my_id, bot_info.TRAINING_FILE)
                 except Exception as e:
                     print(e)
-                    bot.send_message(message.from_user.id, 'Training adding failed')
+                    bot.send_message(my_id, 'Training adding failed')
 
             elif message.text.split(' ')[0] == 'Add_birthday':
                 try:
@@ -395,18 +396,27 @@ def handle_text(message):
                     team_tracker.send_file(my_id, bot_info.BIRTHDAY_FILE)
                 except Exception as e:
                     print(e)
-                    bot.send_message(message.from_user.id, 'Birthday adding failed')
+                    bot.send_message(my_id, 'Birthday adding failed')
             
             elif message.text == 'Commands':
                 text = 'COMMANDS:\n\nSet (uid) (team)\nDelete (uid)\nAdd_training (date (e.g. 24.01)) (text(e.g. 24 января, СР 18.30))\
-                \nAdd_birthday (date (e.g. 26.08)) (name(e.g. Кухарева Даша)) (text(e.g.26 августа))\
+                \nAdd_birthday (date (e.g. 26.08)) (name(e.g. Кухарева Даша)) (text(e.g.26 августа))\nClear message file\
                 \n\nTEAMS:\n\nFoxes\nАнтигравитация\nИствуд-2\nПаллада-5\
                 \n\nOPTIONS:\n\nРасписание\nСтатистика\nБлижайший День Рождения\
                 \nБлижайшая тренировка\nХочу картинку Лисички'
                 bot.send_message(my_id, text)
 
+            elif message.text == 'Clear message file':
+                try:
+                    team_tracker.clear_file(message_file)
+                    bot.send_message(my_id, 'The message file has been cleared successfully.')
+                    team_tracker.send_file(my_id, message_file)
+                except Exception as e:
+                    print(e)
+                    bot.send_message(my_id, 'Error. Message file has not been cleared.')
+
             else:
-                bot.send_message(message.from_user.id, 'Artem, I don\'t know this command!')
+                bot.send_message(my_id, 'Artem, I don\'t know this command!')
         else:
             bot.send_message(message.from_user.id, 'То, что ты пишешь - полная чушь!')
 
