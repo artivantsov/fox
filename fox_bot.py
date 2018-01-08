@@ -380,7 +380,7 @@ def handle_text(message):
                 try:
                     date, text = message.text.split(' ')[1], ' '.join(message.text.split(' ')[2:])
                     bot_info.add_training(date, text)
-                    bot.send_message(my_id, 'Training has been added successfully!\ndate: {date}\ntext: {text}'.format(date, text))
+                    bot.send_message(my_id, 'Training has been added successfully!\ndate: {}\ntext: {}'.format(date, text))
                     team_tracker.send_file(my_id, bot_info.TRAINING_FILE)
                 except Exception as e:
                     print(e)
