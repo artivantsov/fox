@@ -408,9 +408,9 @@ def handle_text(message):
 
             elif message.text == 'Clear message file':
                 try:
+                    team_tracker.send_file(my_id, message_file)
                     team_tracker.clear_file(message_file)
                     bot.send_message(my_id, 'The message file has been cleared successfully.')
-                    team_tracker.send_file(my_id, message_file)
                 except Exception as e:
                     print(e)
                     bot.send_message(my_id, 'Error. Message file has not been cleared.')
