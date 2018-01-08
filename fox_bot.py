@@ -158,7 +158,8 @@ class BotInfo:
 
     def nearest_date(self, base, dates):
 
-            nearness = {int(date.strftime("%s")) - int(base.strftime("%s")): date for date in dates.keys() if (int(base.strftime("%s")) <= int(date.strftime("%s")))}
+            fourteen_hrs = 14*60*60
+            nearness = {int(date.strftime("%s")) - int(base.strftime("%s")): date for date in dates.keys() if (int(base.strftime("%s")) + fourteen_hrs <= int(date.strftime("%s")))}
             if nearness:
                 return dates[nearness[min(nearness.keys())]]
             return ''
@@ -306,7 +307,7 @@ def handle_text(message):
 
     try:
         bot_info.message_count += 1
-        if bot_info.message_count % 20 == 0:
+        if bot_info.message_count % 40 == 0:
             team_tracker.send_file(my_id, message_file)
     except Exception as e:
         bot.send_message(my_id, 'Sending message file FAILED:\n{}'.format(str(e)))
