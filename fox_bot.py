@@ -22,17 +22,17 @@ message_file = 'all_messages.txt'
 
 links = {
     'Foxes': {
-        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=669',
-        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=669'},
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=728',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=728'},
     'Антигравитация': {
-        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=634',
-        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=634'},
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=702',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=702'},
     'Паллада-5': {
-        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=661',
-        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=661'},
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=735',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=735'},
     'Иствуд-2': {
-        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=669',
-        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=669'}
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=728',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=728'}
 }
 
 
