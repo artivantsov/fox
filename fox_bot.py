@@ -14,11 +14,11 @@ import io
 
 my_id = 105698410
 admin_ids = [my_id]
-#token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE' # test token
-token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q' # work token
+# token = '464405818:AAFnJH_fXXWZckK6hOM5wadXulKMKp4w3jE'  # test token
+token = '481006531:AAG4WhndJD3mowdu1GpbbtfgKUOY969EA5Q'  # work token
 
 message_file = 'all_messages.txt'
-#407850900: 'Паллада-5'
+# 407850900: 'Паллада-5'
 
 links = {
     'Foxes': {
@@ -32,7 +32,10 @@ links = {
         'stats': 'http://volleymsk.ru/ap/trntable.php?trn=735'},
     'Иствуд-2': {
         'schedule': 'http://volleymsk.ru/ap/rasp.php?id=728',
-        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=728'}
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=728'},
+    'ВК "Русская Рулетка"': {
+        'schedule': 'http://volleymsk.ru/ap/rasp.php?id=705',
+        'stats': 'http://volleymsk.ru/ap/trntable.php?trn=705'}
 }
 
 
@@ -51,7 +54,7 @@ class TeamTracker():
             uid = str(uid)
             self.current_teams[uid] = team
             self.update_dictionary()
-        else: 
+        else:
             raise('Invalid team')
 
     def set_deafault_team(self, uid):
@@ -101,7 +104,9 @@ class TeamTracker():
         with open(file, 'w') as f:
             f.write('')
 
+
 # =============== Bot info class ======================
+
 
 class BotInfo:
 
@@ -130,7 +135,7 @@ class BotInfo:
                 elif i == 4:
                     score = data.text
             all_teams[team] = {'place': place,
-                           'score': score}
+                               'score': score}
         sort = sorted(all_teams.keys(), key=lambda x: int(all_teams[x]['place']))
         for team in sort:
             text += str(all_teams[team]['place']) + 8*' ' + team + ': ' + ' '*2*(num_spaces-len(team)) + str(all_teams[team]['score']) + '\n'
@@ -234,7 +239,8 @@ def basic_start_handler(user_markup, team=None):
         'Foxes': foxes_start_handler,
         'Антигравитация': common_start_handler,
         'Паллада-5': common_start_handler,
-        'Иствуд-2': common_start_handler}
+        'Иствуд-2': common_start_handler,
+        'ВК "Русская Рулетка"': common_start_handler}
     if team in func_dict.keys():
         func_dict[team](user_markup)
     else:
@@ -243,7 +249,7 @@ def basic_start_handler(user_markup, team=None):
 def my_start_handler(user_markup):
     user_markup.row('/start', '/stop')
     user_markup.row('Иствуд-2', 'Паллада-5', 'Foxes')
-    user_markup.row('Антигравитация')
+    user_markup.row('Антигравитация', 'ВК "Русская Рулетка"')
     user_markup.row('Commands')
     return
 
@@ -401,7 +407,7 @@ def handle_text(message):
             elif message.text == 'Commands':
                 text = 'COMMANDS:\n\nSet (uid) (team)\nDelete (uid)\nAdd_training (date (e.g. 24.01)) (text(e.g. 24 января, СР 18.30))\
                 \nAdd_birthday (date (e.g. 26.08)) (name(e.g. Кухарева Даша)) (text(e.g.26 августа))\nClear message file\
-                \n\nTEAMS:\n\nFoxes\nАнтигравитация\nИствуд-2\nПаллада-5\
+                \n\nTEAMS:\n\nFoxes\nАнтигравитация\nИствуд-2\nПаллада-5\nВК "Русская Рулетка"\
                 \n\nOPTIONS:\n\nРасписание\nСтатистика\nБлижайший День Рождения\
                 \nБлижайшая тренировка\nХочу картинку Лисички'
                 bot.send_message(my_id, text)
